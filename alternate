@@ -1,0 +1,32 @@
+/* Register Settings */
+add_action('admin_init','register_my_settings');
+function register_my_settings()
+{
+	add_settings_section(
+	'anti-user-settings',
+	'Section for Switch On/Off',
+	'au_setting_section_callback_function',
+	'anti-user'
+	);
+	// Register a callback
+	register_setting('anti-user-settings-switch','au_register_switch', 'intval');
+	add_settings_field(
+		'au_register_switch_tag_id', // id
+		'Title for On/Off', // title
+		'au_register_switch_show_settings',
+		'anti-user'
+		/* These are optional below */
+		//'au_register_switch_id',
+		//array('label_for'=> 'au_register_switch_id')
+		);
+	function au_register_switch_show_settings( $args )
+	{
+		echo 'getting there';
+		/*$data = esc_attr(get_option('au_register_switch'));
+		printf(
+			"<input type='text' name='au_register_switch' value='%1$s' id='%2$s'/>",
+			$data,
+			$args['label_for']
+			);*/
+	}
+}

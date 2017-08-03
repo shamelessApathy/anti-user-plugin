@@ -23,9 +23,25 @@ defined('ABSPATH') or die(' No script kiddies please! ');
 
 /* Adding a Top-Level Admin Menu */
 
+class AntiUser {
 
 
+public function __construct()
+{
 
+	function first_hook()
+	{
+		// This is where we intercept the registration of a new user, if au_register switch is turned ON, we block creation
+		add_action('register_post', 'prevent_registration', 10, 3 );
+		function prevent_registration($sanitized_user_login, $user_email, $errors)
+		{
+			if (get_option('au_register_switch') === '1')
+			{
+				$errors->add('demo_error', "<strong>ERROR</strong>:This site does not accept new users");
+			}
+		}
+	}
+	add_action('wp_loaded', 'first_hook');
 
 
 /* Registering the Anti-User menu inside of the admin_menu hook */
@@ -58,47 +74,23 @@ add_option('au_register_switch', 0);
 */
 function anti_user_options_page()
 {
-	$current_value = get_option('au_register_switch');
+	if (isset($_POST['au_register_switch']))
+	{
+		update_option('au_register_switch', $_POST['au_register_switch']);
+	}
 	$template_url = plugin_dir_url(__FILE__) . "templates";
 	require_once("templates/au_admin_menu.php");
 }
-
-/* Register Settings */
-add_action('admin_init','register_my_settings');
-function register_my_settings()
-{
-	add_settings_section(
-	'anti-user-settings',
-	'Section for Switch On/Off',
-	'au_setting_section_callback_function',
-	'anti-user'
-	);
-	// Register a callback
-	register_setting('anti-user-settings-switch','au_register_switch', 'intval');
-	add_settings_field(
-		'au_register_switch_tag_id', // id
-		'Title for On/Off', // title
-		'au_register_switch_show_settings',
-		'anti-user'
-		/* These are optional below */
-		//'au_register_switch_id',
-		//array('label_for'=> 'au_register_switch_id')
-		);
-	function au_register_switch_show_settings( $args )
-	{
-		echo 'getting there';
-		/*$data = esc_attr(get_option('au_register_switch'));
-		printf(
-			"<input type='text' name='au_register_switch' value='%1$s' id='%2$s'/>",
-			$data,
-			$args['label_for']
-			);*/
-	}
 }
 
 
+}
+$anti = new AntiUser();
 
 
 
 
-?>
+
+
+
+
